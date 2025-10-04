@@ -1,0 +1,43 @@
+<!-- {{ xyz }} means evaluate this in Python/Flask and insert the result here -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Recommendations for {{ title }}</title>  
+    <!-- {{ title }}: Jinja syntax to insert whatever 'title' was passed from Flask (in routes.py); basically 'title' will be replaced dynamically by the entered movie title -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <h1>Recommendations for "{{ title }}"</h1>
+
+    {% if error %}   <!-- syntax for checking if error exists -->
+        <p style="color:red">{{ error }}</p>   
+  <!--  'error' will be replaced dynamically (displayed) by the error msg in result (ie. result["error"]) -->
+    {% else %}
+        <ul>
+             {% for movie in recommendations %}   <!-- iterating over every movie in recommendations list -->
+                <li>{{ movie }}</li> 
+             {% endfor %}    <!-- ends for loop -->
+        </ul>
+    {% endif %}
+
+    
+    <!-- search history -->
+    {% if history %}
+        <hr>
+        <h4>Recent Searches:</h4>
+        <ul>
+            {% for search in history %}     <!-- search eg = ("Inception", "2025-09-29T20:45:00") -->
+                <li>
+                    {{ search[0] }} ({{ search[1] }})    <!-- search[0] = "Inception"; search[1] = timestamp--> 
+                </li>    
+            {% endfor %}
+        </ul>
+    {% endif %}        
+
+    <a href="/search">Search Again</a>   <!-- when clicked goes back to search page -->
+</body>
+
+</html>

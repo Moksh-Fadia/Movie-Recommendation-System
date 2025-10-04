@@ -1,38 +1,55 @@
-## Movie Recommendation System
+# 🎬 Movie Recommender System
 
-Project Overview:
-This project is a Content-Based Movie Recommendation System that uses various features of movies such as genre, cast, overview, and original title to recommend similar movies based on the user's input. The recommendations are generated using text similarity techniques such as Cosine Similarity and TF-IDF (Term Frequency-Inverse Document Frequency).
+A content-based **Movie Recommendation System** built using **Flask** and **Sentence Transformers** that suggests similar movies based on user input.  
+It also keeps track of recent searches using **SQLite** and displays them dynamically on the results page.
 
-Key Features:
-1) Content-Based Filtering: The system uses features like genre, overview, and cast to compute similarity between movies.
-2) Movie Filtering: Animated, family, and children’s movies can be excluded from recommendations based on user preferences.
-3) Movie Recommendations: Provides a list of recommended movies based on an input movie title.
+---
 
-Technologies Used:
-- Python: The main programming language used for the implementation.
-- Pandas: For data manipulation and handling movie datasets.
-- Scikit-learn: For creating the TF-IDF model and computing cosine similarity.
-- Regular Expressions: To clean and preprocess text data.
-- NumPy: Used for array manipulation and numerical operations.
+## 🚀 Features
 
-How It Works:
-1) Data Preprocessing:
-The dataset is cleaned, with text features (genre, overview, and cast) processed into lowercase and unnecessary characters removed.
-The cast is cleaned to remove extra spaces and standardized.
-A combined_features column is created, which merges the genre, overview, and cast with different weightings.
+- Search any movie and get top 5 similar recommendations instantly.  
+- Displays recent search history with timestamps.  
+- Simple and clean web interface using Flask + HTML/CSS.  
+- Optimized with precomputed sentence embeddings for fast responses.
 
-2) TF-IDF Vectorization:
-The combined_features text data is transformed into a TF-IDF matrix, capturing the importance of each word in the context of the dataset.
+---
 
-3) Cosine Similarity:
-Cosine similarity is used to compute the similarity between movies based on the TF-IDF matrix.
+## 🧩 Tech Stack
 
-4) Movie Recommendation:
-The recommendation function receives a movie title, processes it, and compares its similarity against other movies to generate the most similar movie titles. Optional filtering is applied to exclude animated or family movies.
+**Backend:** Python, Flask, SQLite  
+**ML/NLP:** SentenceTransformers (`all-MiniLM-L6-v2`), Scikit-learn (cosine similarity)  
+**Frontend:** HTML, CSS, Jinja2 Templates  
+**Libraries:** Pandas, NumPy  
 
-Limitations:
-- Limited Data: The recommendation system relies on the quality and quantity of the available dataset. If the dataset doesn't have enough details, the recommendations might not be accurate.
+---
 
-- Content-Based: This implementation focuses purely on content-based filtering and doesn't consider user preferences, which can limit its personalization.
+## How It Works
 
-- Complexity of Features: The weightings used for different features might need more fine-tuning to improve the accuracy of recommendations.
+User enters a movie name in the search box.
+The system encodes the movie’s combined metadata (overview, genre, cast) using the SentenceTransformer model.
+It calculates cosine similarity between movies to find the most semantically similar ones.
+Results and recent searches are rendered dynamically via Flask and Jinja templates.
+
+---
+
+## 🗂️ Database
+
+The app uses SQLite (app/search_history.db) to store recent searches:
+
+id (auto-increment primary key)
+title (searched movie name)
+timestamp (search time)
+
+---
+
+# Install dependencies
+
+pip install -r requirements.txt
+
+# Run the Flask App
+
+python main.py
+
+# Access the web app
+
+Go to: 👉 http://127.0.0.1:5000/search

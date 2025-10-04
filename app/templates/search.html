@@ -1,0 +1,25 @@
+<!-- '{{ xyz }}'' means evaluate this in Python/Flask and insert the result here -->
+
+<!-- Jinja syntax is used here bcoz it is a templating engine for Python web frameworks like Flask which allows us to make our HTML dynamic (instead of hardcoding each movie title in the search.html file, we can use Jinja to insert the movie title entered by the user dynamically) -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Movie Recommender</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">   
+<!-- url_for is a Flask function that generates the URL for static files (like CSS, JS, images) stored in the 'static' folder of the Flask app; basically load and apply the CSS file named style.css, which Flask serves from the static folder  -->
+</head>
+
+<body>
+    <h1>Get Movie Recommendations!</h1>
+
+    <form action="/recommend-form" method="POST">
+        <label for="movie">Enter movie name:</label>
+        <input type="text" id="movie" name="title" placeholder="eg: Inception" required>
+        <input type="submit" value="Get Recommendations">
+    </form>
+
+</body>
+
+</html>
