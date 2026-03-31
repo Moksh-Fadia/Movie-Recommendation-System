@@ -6,6 +6,7 @@ import os
 import numpy as np   # bcoz embeddings are stored in numpy arrays
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer   # sentence-transformer (a huggingface library) imports a model to get the semantic embeddings of text data
+import time
 
 class MovieRecommender:
     def __init__(self, csv_path):
@@ -50,6 +51,7 @@ class MovieRecommender:
 
 
     def _compute_similarity(self):
+        start_time = time.time()   # start timer
         embedding_file = "data/movie_embeddings.npy"    # file path to save/load precomputed embeddings
 
         if os.path.exists(embedding_file):   # checks if the file already exists
@@ -67,6 +69,8 @@ class MovieRecommender:
 # basically all of this to prevent recomputing embeddings every time the server restarts            
 
         self.cosine_sim = cosine_similarity(self.movie_embeddings)   # precomputes cosine similarity between all pairs of movie embeddings
+        end_time = time.time()   # end timer
+        print(f"Startup time: {end_time - start_time:.2f} seconds")    
         print("Embeddings ready")   
 
 

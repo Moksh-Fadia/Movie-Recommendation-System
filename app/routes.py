@@ -3,6 +3,7 @@
 from flask import Blueprint, request, jsonify, render_template, redirect   # Blueprint groups related routes together, request lets us read incoming HTTP request data, jsonify converts Python data (dict/list) to JSON format for API responses/send back to client, render_template renders HTML files from templates folder; redirect redirects user to a different route/url
 from app.recommender import MovieRecommender   # import the recommender class so that it can be called inside API routes
 from app.db import add_search, get_recent_searches, create_search_history_table, init_db
+import time
 
 # creates a Blueprint named 'routes' to group routes
 bp = Blueprint('routes', __name__, template_folder="templates")  # __name__ tells Flask where this blueprint is defined (ie. current file)
@@ -25,6 +26,8 @@ def search():
 @bp.route("/recommend-form", methods=["POST"])   # new route responds to POST requests (from the html form); this route is where the HTML form sends its data
 
 def recommend_form():
+    start_time = time.time()   # start timer to measure how long the recommendation process takes (for performance monitoring)
+
     try:
         title = request.form.get("title", "").strip()   # reads the "title" field from the submitted form data; remove extra spaces before/after the title
 
@@ -41,9 +44,17 @@ def recommend_form():
         
         history = get_recent_searches(limit=5)
 
-        return render_template("results.html", recommendations=result["recommendations"], title=title, history=history)
+        response = render_template("results.html", recommendations=result["recommendations"], title=title, history=history)
+
+        end_time = time.time()   # end timer
+        print(f"Total request time: {end_time - start_time:.4f} sec")
+
+        return response
     
     except Exception as e:    # handles unexpected errors
+        end_time = time.time()
+        print(f"Total request time (error): {end_time - start_time:.4f} sec")
+        
         return render_template("results.html", error="An unexpected error occurred", title=title)
     
 

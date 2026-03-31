@@ -1,5 +1,13 @@
-*.db
-**/__pycache__/
-venv/
+# Python
+__pycache__/
 *.pyc
+
+# Virtual environment
+venv/
+
+# Data files
+*.npy
+*.db
+
+# OS files
 .DS_Store
