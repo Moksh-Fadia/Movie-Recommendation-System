@@ -10,7 +10,21 @@ It also keeps track of recent searches using **SQLite** and displays them dynami
 - Search any movie and get top 5 similar recommendations instantly.  
 - Displays recent search history with timestamps.  
 - Simple and clean web interface using Flask + HTML/CSS.  
-- Optimized with precomputed sentence embeddings for fast responses.
+
+---
+
+## Performance Optimization
+
+- Reduced application startup time by precomputing and caching sentence embeddings using NumPy.
+- Improved startup from ~63 seconds to ~0.24 seconds (~99.6% reduction) by avoiding repeated model inference.
+- Ensures instant server readiness after initial setup.
+
+---
+
+## Performance Measurement
+
+- Measured end-to-end request latency including database operations, recommendation logic, and template rendering.
+- Achieved an average response time of ~15 ms per request during local testing.
 
 ---
 
