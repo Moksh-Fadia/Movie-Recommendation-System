@@ -51,7 +51,7 @@ class MovieRecommender:
 
 
     def _compute_similarity(self):
-        start_time = time.time()   # start timer
+        start_time = time.time()   # start timer (Time taken to initialize the recommender system when the server starts) 
         embedding_file = "data/movie_embeddings.npy"    # file path to save/load precomputed embeddings
 
         if os.path.exists(embedding_file):   # checks if the file already exists
