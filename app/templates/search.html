@@ -9,11 +9,13 @@
     <title>Movie Recommender</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">   
 <!-- url_for is a Flask function that generates the URL for static files (like CSS, JS, images) stored in the 'static' folder of the Flask app; basically load and apply the CSS file named style.css, which Flask serves from the static folder  -->
+<!-- It avoids hardcoding paths and ensures Flask can correctly locate static assets like CSS files.  -->
 </head>
 
 <body>
     <h1>Get Movie Recommendations!</h1>
 
+<!-- When submit button is clicked: Send data to /recommend-form using POST     -->
     <form action="/recommend-form" method="POST">
         <label for="movie">Enter movie name:</label>
         <input type="text" id="movie" name="title" placeholder="eg: Inception" required>

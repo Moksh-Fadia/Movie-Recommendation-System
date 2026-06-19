@@ -3,8 +3,9 @@ from datetime import datetime
 
 DB_PATH = "app/search_history.db"  # sqlite file/path that will store the searches
 
-def init_db():
-    conn = sqlite3.connect("search_history.db")   # connects to the sqlite database (creates the file if it doesn't exist)
+# Create database/table
+def init_db():      
+    conn = sqlite3.connect(DB_PATH)   # connects to the sqlite database (creates the file if it doesn't exist)
     cursor = conn.cursor()     # creates a cursor object to execute SQL commands
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS search_history (
@@ -17,6 +18,7 @@ def init_db():
     conn.close()    # closes the connection
 
 
+# Insert search entry to the database
 def add_search(title):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -27,6 +29,7 @@ def add_search(title):
     conn.close()
 
 
+# Fetch recent search history 
 def get_recent_searches(limit=5):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
@@ -40,18 +43,4 @@ def get_recent_searches(limit=5):
     return results
 
 
-def create_search_history_table():
-    conn = sqlite3.connect("search_history.db")
-    cursor = conn.cursor()
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS search_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT NOT NULL,
-        timestamp TEXT NOT NULL
-    )
-    """)
-
-    conn.commit()
-    conn.close()
 

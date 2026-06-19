@@ -14,7 +14,7 @@
 
     {% if error %}   <!-- syntax for checking if error exists -->
         <p style="color:red">{{ error }}</p>   
-  <!--  'error' will be replaced dynamically (displayed) by the error msg in result (ie. result["error"]) -->
+  <!--  'error' will be replaced dynamically (displayed) by the error msg in result (ie. result["error"]) (in routes.py) -->
     {% else %}
         <ul>
              {% for movie in recommendations %}   <!-- iterating over every movie in recommendations list -->
@@ -25,7 +25,7 @@
 
     
     <!-- search history -->
-    {% if history %}
+     {% if history %}     <!-- if history exists then show it -->
         <hr>
         <h4>Recent Searches:</h4>
         <ul>
@@ -37,7 +37,7 @@
         </ul>
     {% endif %}        
 
-    <a href="/search">Search Again</a>   <!-- when clicked goes back to search page -->
+    <a href="/search">Search Again</a>   <!-- when clicked goes back to search page using GET /search in routes.py -->
 </body>
 
 </html>

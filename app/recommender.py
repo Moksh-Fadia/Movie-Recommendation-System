@@ -9,12 +9,12 @@ from sentence_transformers import SentenceTransformer   # sentence-transformer (
 import time
 
 class MovieRecommender:
-    def __init__(self, csv_path):
+    def __init__(self, csv_path):    # constructor that initializes the recommender system; runs automatically when MovieRecommender(...) object is created
         self.movies = pd.read_csv(csv_path)
         self.model = SentenceTransformer('all-MiniLM-L6-v2')   # loads the pre-trained model to get text embeddings; 
-        # SentenceTransformer('...') initializes the model and makes it ready for encoding 
-        self._prepare_data()
-        self._compute_similarity()
+        # SentenceTransformer('...') initializes/loads the model into the memory and makes it ready for encoding 
+        self._prepare_data()    # calls its func; prepares the data by cleaning and combining features
+        self._compute_similarity()   # calls its func; computes the embeddings and cosine similarity matrix for all movies
 
     def _clean_text(self, text):
         text = str(text).lower()
@@ -31,13 +31,13 @@ class MovieRecommender:
             return ''  
         
     def _prepare_data(self):
-        self.movies = self.movies.drop_duplicates(subset=['names'])
+        self.movies = self.movies.drop_duplicates(subset=['names'])   # remove duplicate movie titles (keeping the first occurrence)
         self.movies = self.movies.dropna(subset=['names', 'genre', 'overview'])    
 
         self.movies['genre'] = self.movies['genre'].apply(self._clean_text)
         self.movies['overview'] = self.movies['overview'].apply(self._clean_text)
-        self.movies['cast'] = self.movies['crew'].apply(self._clean_crew)
         self.movies['names'] = self.movies['names'].apply(self._clean_text)
+        self.movies['cast'] = self.movies['crew'].apply(self._clean_crew)
 
         self.movies['combined_features'] = (
             (self.movies['overview'] + ' ') * 1 +
@@ -61,14 +61,20 @@ class MovieRecommender:
             print("Computing embeddings for the first time...")
             self.movie_embeddings = self.model.encode(self.movies['combined_features'].tolist(), show_progress_bar=True)  
 # converts every movie’s combined text (overview + genre + cast + name) into a dense vector embedding; show_progress_bar=True shows a progress bar while encoding
-# self.model.encode(list_of_strings): feeds that list into the transformer model and returns a 2D numpy array        
-# self.movie_embeddings shape = (no of rows in the dataset, 384 [embedding size of the model]); Each row = a vector (list of 384 float nos) that encodes the "meaning" of that movie’s combined_features text              
+# self.model.encode(list_of_strings): feeds that list into the transformer model and returns a 2D numpy array
+# encode() is a method of the SentenceTransformer model that takes a list of strings and converts each string into a fixed-size vector ie. embedding (numeric) that captures its semantic meaning; the output is a 2D array where each row corresponds to the embedding of a movie's combined features text         
+# self.movie_embeddings shape = (no of rows in the dataset, 384 [embedding size of the model]) ie. (10000, 384); Each row = a vector (list of 384 float nos) that encodes the "meaning" of that movie’s combined_features text; The model all-MiniLM-L6-v2 produces 384-dimensional embeddings 
+# The idea is that movies with similar combined features will have similar embeddings (vectors that are close in the 384-dimensional space), which allows us to compute similarity between movies using cosine similarity
+              
             np.save(embedding_file, self.movie_embeddings)   # saves the computed embeddings to the .npy file for future use
             print("Embeddings computed and saved")
 
 # basically all of this to prevent recomputing embeddings every time the server restarts            
 
         self.cosine_sim = cosine_similarity(self.movie_embeddings)   # precomputes cosine similarity between all pairs of movie embeddings
+# self.cosine_sim[i][j] means: Similarity between movie i and movie j
+# why cosine sim? Because it measures the cosine of the angle between two vectors in a multi-dimensional space, which is a common way to measure similarity between text embeddings; it ranges from -1 (completely dissimilar) to 1 (identical), with 0 indicating orthogonality (no similarity); it is effective for high-dimensional data like text embeddings because it focuses on the direction of the vectors rather than their magnitude, making it less sensitive to differences in length and more focused on the semantic content captured by the embeddings
+
         end_time = time.time()   # end timer
         print(f"Startup time: {end_time - start_time:.2f} seconds")    
         print("Embeddings ready")   
@@ -86,13 +92,14 @@ class MovieRecommender:
         sorted_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)  # sorts movies based on the second item x[1] ie. scores in descending order
 
         recommendations = []
-        for i, _ in sorted_scores[1:]:   # skips the first movie as it is the same movie
+        for i, _ in sorted_scores[1:]:   # skips the first movie as it is the same movie (movie's similarity score with itself will have the highest similarity score of 1 (complete match) so we skip it)
+    # _ means ignore the second item (similarity score) as we only need the index i of the movie to get its title and genre        
             genre = str(self.movies.loc[i, 'genre'])  # gets the genre of the movie at index i       
 
             if any(exclusion in genre.lower() for exclusion in ['animation', 'family', 'children']):
                 continue
 
-            recommendations.append(self.movies.loc[i, 'names'])
+            recommendations.append(self.movies.loc[i, 'names'])     # appends the movie title at index i to the recommendations list
 
             if len(recommendations) >= num_recommendations:
                 break
